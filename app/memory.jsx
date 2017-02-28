@@ -1,6 +1,17 @@
 import React from 'react'
-import { map } from 'lodash'
+import { Provider } from 'react-redux'
+import { createStore } from 'redux'
+
+import { rootReducer } from 'ducks'
+import Board from 'board'
+
+const store = createStore(rootReducer)
+
+console.log(store.getState())
+store.subscribe(() => { console.log(store.getState()) })
 
 export default () => (
-  <div>Memory</div>
+  <Provider store={store}>
+    <Board />
+  </Provider>
 )
