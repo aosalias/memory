@@ -1,7 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { map, partial } from 'lodash'
-import { showCard, hideCard } from 'ducks'
+import { map, partial, get } from 'lodash'
+
+import { showCard, hideCard, scoreUser } from 'ducks'
 
 const cardStyles = {
   height: 50,
@@ -36,29 +37,43 @@ const Board = ({ cards, onCardClick }) => (
   </div>
 )
 
-const mapStateToProps = ({ cards }) => ({ cards })
+const mapStateToProps = ({ cards, game: { currentUserId } }) => ({ cards, currentUserId })
 
 // View state
-const turnTimeout = 2000
+const turnTimeout = 250
 let lastCard = null
 let boardEnabled = true
 
 const mapDispatchToProps = (dispatch) => ({
-  onCardClick: (card) => {
-    if(boardEnabled && card !== lastCard) {
+  onCardClick: (currentUserId, card) => {
+    if(card.id === get(lastCard, 'id')) { return }
+
+    if(boardEnabled) {
       dispatch(showCard(card))
       if(lastCard) {
-        boardEnabled = false
-        setTimeout(() => {
-          dispatch(hideCard(lastCard))
-          dispatch(hideCard(card))
+        if(card.value === lastCard.value) {
+          dispatch(scoreUser({ value: card.value, id: currentUserId }))
           lastCard = null
-          boardEnabled = true
-        }, turnTimeout)
+        } else {
+          boardEnabled = false
+          setTimeout(() => {
+            dispatch(hideCard(lastCard))
+            dispatch(hideCard(card))
+            lastCard = null
+            boardEnabled = true
+          }, turnTimeout)
+        }
       } else {
         lastCard = card
       }
     }
   }
 })
-export default connect(mapStateToProps, mapDispatchToProps)(Board)
+
+const mergeProps = (stateProps, { onCardClick }, ownProps) => ({
+  ...stateProps,
+  onCardClick: partial(onCardClick, stateProps.currentUserId),
+  ...ownProps,
+})
+
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Board)
