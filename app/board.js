@@ -1,29 +1,34 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { map, partial, get } from 'lodash'
+import { map, partial, get, find } from 'lodash'
 
-import { showCard, hideCard, scoreUser } from 'ducks'
+import { showCard, hideCard, scoreUser, advanceTurn } from 'ducks'
 
 const cardStyles = {
-  height: 50,
-  width: 50,
+  width: 48,
+  height: 16,
+  textAlign: 'center',
+  padding: '16px 0',
   border: '1px solid #ddd',
   margin: '0 10px 10px 0',
-  float: 'left',
-  boxShadow: '0 0 5px 1px #ccc'
+  boxShadow: '0 0 5px 1px #ccc',
+  display: 'inline-block',
+  overflow: 'hidden',
 }
 
 const boardStyles = {
-  padding: "20px 10px 20px 20px",
+  padding: "16px 8px 16px 16px",
+  maxWidth: 820,
+  position: 'relative',
 }
 
 const Card = ({ value, revealed, onClick }) => (
-  <div style={ cardStyles } onClick={ onClick }>
-    { revealed && value }
-  </div>
+  <span style={ cardStyles } onClick={ onClick }>
+    <span>{ revealed && value }</span>
+  </span>
 )
 
-const Board = ({ cards, onCardClick }) => (
+const Board = ({ cards, onCardClick, winner }) => (
   <div style={ boardStyles }>
     {
       map(cards, (card) => (
@@ -37,7 +42,13 @@ const Board = ({ cards, onCardClick }) => (
   </div>
 )
 
-const mapStateToProps = ({ cards, game: { currentUserId } }) => ({ cards, currentUserId })
+const mapStateToProps = ({
+  cards,
+  game: { currentUserId }
+}) => ({
+  cards,
+  currentUserId,
+})
 
 // View state
 const turnTimeout = 250
@@ -63,6 +74,8 @@ const mapDispatchToProps = (dispatch) => ({
             boardEnabled = true
           }, turnTimeout)
         }
+
+        dispatch(advanceTurn())
       } else {
         lastCard = card
       }

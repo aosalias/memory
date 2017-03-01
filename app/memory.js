@@ -5,22 +5,19 @@ import { createStore } from 'redux'
 import { rootReducer } from 'ducks'
 import Board from 'board'
 import Users from 'users'
+import Game from 'game'
 
 const store = createStore(rootReducer)
 
 console.log(store.getState())
 store.subscribe(() => { console.log(store.getState()) })
 
-const Game = () => (
-  <div>
-    <h1>Game of memory built with React & Friends</h1>
-    <Users />
-    <Board />
-  </div>
-)
-
 export default () => (
   <Provider store={store}>
-    <Game />
+    <div>
+      <Game />
+      <Users />
+      <Board />
+    </div>
   </Provider>
 )

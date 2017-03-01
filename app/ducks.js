@@ -33,6 +33,8 @@ const cardsReducer = (state = defaultCards, { type, id, ...cardProps }) => {
       }
       return card
     })
+  } else if (type === RESET_GAME) {
+    return defaultCards
   }
 
   return state
@@ -62,6 +64,8 @@ const usersReducer = (state = defaultUsers, { type, id, ...userProps }) => {
       }
       return user
     })
+  } else if (type === RESET_GAME) {
+    return defaultUsers
   }
 
   return state
@@ -69,13 +73,30 @@ const usersReducer = (state = defaultUsers, { type, id, ...userProps }) => {
 
 
 // GAME
+const RESET_GAME = 'RESET_GAME'
+const ADVANCE_TURN = 'ADVANCE_TURN'
+
+export const resetGame = () => ({
+  type: RESET_GAME
+})
+
+export const advanceTurn = () => ({
+  type: ADVANCE_TURN
+})
+
 const defaultGame = {
   currentUserId: 1,
+  turn: 0,
 }
 
-const gameReducer = (state = defaultGame) => (
-  state
-)
+const gameReducer = (state = defaultGame, { type }) => {
+  if(type === ADVANCE_TURN) {
+    return merge({}, state, { turn: state.turn + 1 } )
+  } else if(type === RESET_GAME) {
+    return defaultGame
+  }
+  return state
+}
 
 // ROOT
 const rootReducer = combineReducers({

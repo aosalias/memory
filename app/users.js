@@ -15,7 +15,6 @@ const userStyles = (color, active) => {
 }
 
 const User = ({ id, scores, color, active }) => (
-
   <div style={ userStyles(color, active) }>
     <h3>Player: { id }</h3>
     <h4>Score: { scores.length }</h4>
